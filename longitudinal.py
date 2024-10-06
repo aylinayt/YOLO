@@ -22,7 +22,7 @@ class VehicleControlNode(Node):
         """Drive the vehicle straight unless stop flag is set."""
         if not self.stop_flag:
             drive_msg = AckermannDrive() # Create a new drive command message
-            drive_msg.speed = 5.0 # Set the vehicle speed (in m/s)
+            drive_msg.speed = 50.0 # Set the vehicle speed (in m/s)
             drive_msg.steering_angle = 0.0 # Set steering to drive straight
             self.drive_publisher.publish(drive_msg) # Publish the drive command
         else:
