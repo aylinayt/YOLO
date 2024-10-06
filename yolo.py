@@ -7,22 +7,20 @@ from cv_bridge import CvBridge
 from std_msgs.msg import Bool
 import os
 
-boxes = []
-confidences = []
-class_ids = []
 
 class YoloDetectionNode(Node):
     def __init__(self):
-        super().__init__('yolo_detection_node') # Initialize the node with a nam
-        self.subscription = self.create_subscription(Image, '/carla/ego_vehicle/rgb_front/image',
-        self.image_callback, 10) # Queue size
+        super().__init__('yolo_detection_node') # Initialize the node with a name
+        self.subscription = self.create_subscription(Image, '/carla/ego_vehicle/rgb_front/image', self.image_callback, 10) # Queue size
         self.stop_publisher = self.create_publisher(Bool, '/carla/ego_vehicle/stop_flag', 10) # Queue size
+        
+        
         self.bridge = CvBridge() # Bridge to convert between ROS and OpenCV images
         self.class_names = open("coco.names").read().strip().split("\n") # Load class names
         self.net = cv2.dnn.readNetFromDarknet("yolov3.cfg", "yolov3.weights") # Load YOLOv3 model
         
-        self.layer_names = [self.net.getLayerNames()[i[0] - 1] for i in
-        self.net.getUnconnectedOutLayers()] # Get the output layer names
+        self.layer_names = [self.net.getLayerNames()[i[0] - 1] for i in self.net.getUnconnectedOutLayers()] # Get the output layer names
+        
         self.save_dir = "saved_images"
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
@@ -31,6 +29,9 @@ class YoloDetectionNode(Node):
 
 
     def image_callback(self, msg):
+        boxes = []
+        confidences = []
+        class_ids = []
         # Convert the incoming ROS image message to an OpenCV format
         image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
         (H, W) = image.shape[:2] # Get image dimensions (height, width
@@ -46,7 +47,7 @@ class YoloDetectionNode(Node):
                 class_id = np.argmax(scores) # Get the class ID with the highest confidence
                 confidence = scores[class_id] # Get the highest confidence score
                 
-                if class_id == 11 and confidence > 0.25:
+                if class_id == 0 and confidence > 0.25:
                     box = detection[0:4] * np.array([W, H, W, H])
                     (centerX, centerY, width, height) = box.astype("int")
 
