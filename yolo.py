@@ -47,7 +47,7 @@ class YoloDetectionNode(Node):
                 class_id = np.argmax(scores) # Get the class ID with the highest confidence
                 confidence = scores[class_id] # Get the highest confidence score
                 
-                if class_id == 0 and confidence > 0.25:
+                if class_id == 0 and confidence > 0.25: # changed the class id to 0 because 0 is person and we want to detect a person
                     box = detection[0:4] * np.array([W, H, W, H])
                     (centerX, centerY, width, height) = box.astype("int")
 
